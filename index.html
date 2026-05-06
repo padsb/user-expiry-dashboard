@@ -837,7 +837,7 @@ async function saveEditUser(){
   r.expiry=expiry;
   const s=computeStatus(expiry);r.status=s.status;r.daysLeft=s.daysLeft;
 
-  try{await saveRecordToFirebase(r);closeModal('editBackdrop');showToast('Updated: '+name);}
+  try{await recordsRef.set(records);closeModal('editBackdrop');showToast('Updated: '+name);}
   catch(err){showToast('Save failed: '+err.message,true);}
 }
 
