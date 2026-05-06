@@ -410,7 +410,7 @@ if(FIREBASE_READY){
   app=firebase.initializeApp(firebaseConfig);
   auth=firebase.auth();
   db=firebase.database();
-  recordsRef=db.ref('crisDashboard/records');
+  recordsRef=db.ref('crisDashboard');
 }
 
 const DEFAULT_CONTRACT_TYPES=['Contract Direct Hire','PECL Secondees','PAD Site Contractor','Host Country Nacional','KL Secondees'];
