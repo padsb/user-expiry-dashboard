@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CRIS Dashboard</title>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <style>
+    body{
+      font-family:Arial,sans-serif;
+      background:#f5f5f5;
+      margin:0;
+      padding:20px;
+    }
+
+    h1{
+      color:#005c3c;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+    }
+
+    button{
+      background:#005c3c;
+      color:white;
+      border:none;
+      padding:10px 16px;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:white;
+      border-radius:8px;
+      overflow:hidden;
+    }
+
+    th{
+      background:#005c3c;
+      color:white;
+      text-align:left;
+      padding:12px;
+    }
+
+    td{
+      padding:10px;
+      border-bottom:1px solid #eee;
+    }
+
+    input{
+      width:100%;
+      padding:8px;
+      border:1px solid #ccc;
+      border-radius:4px;
+    }
+
+    .status{
+      margin-top:15px;
+      color:#666;
+      font-size:14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <h1>CRIS ID Account Dashboard</h1>
+
+  <button onclick="addUser()">+ Add User</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Expiry Date</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+
+  <tbody id="tableBody"></tbody>
+</table>
+
+<div class="status" id="status">
+  Firebase: connecting...
+</div>
+
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBlbAVAn7op5As52meK-y-WdG1YjwpXi0k",
+  authDomain: "user-expiry-dashboard.firebaseapp.com",
+  databaseURL: "https://user-expiry-dashboard-default-rtdb.firebaseio.com",
+  projectId: "user-expiry-dashboard",
+  storageBucket: "user-expiry-dashboard.firebasestorage.app",
+  messagingSenderId: "219095780778",
+  appId: "1:219095780778:web:ce4ba192edd360f4cd6fd3"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database().ref("crisDashboard");
+
+let records = [];
+
+db.on("value", snapshot => {
+
+  const data = snapshot.val();
+
+  if(data){
+    records = Array.isArray(data)
+      ? data
+      : Object.values(data);
+  } else {
+    records = [];
+  }
+
+  render();
+
+  document.getElementById("status").innerText =
+    "Firebase: connected";
+
+}, error => {
+
+  console.error(error);
+
+  document.getElementById("status").innerText =
+    "Firebase: error";
+});
+
+function save(){
+  db.set(records);
+}
+
+function render(){
+
+  const body = document.getElementById("tableBody");
+
+  body.innerHTML = "";
+
+  records.forEach((r,index)=>{
+
+    body.innerHTML += `
+      <tr>
+        <td>
+          <input
+            value="${r.name || ''}"
+            onchange="updateField(${index}, 'name', this.value)"
+          >
+        </td>
+
+        <td>
+          <input
+            value="${r.email || ''}"
+            onchange="updateField(${index}, 'email', this.value)"
+          >
+        </td>
+
+        <td>
+          <input
+            value="${r.expiry || ''}"
+            onchange="updateField(${index}, 'expiry', this.value)"
+          >
+        </td>
+
+        <td>
+          <button onclick="deleteUser(${index})">
+            Delete
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function updateField(index,key,value){
+
+  records[index][key] = value;
+
+  save();
+}
+
+function addUser(){
+
+  records.push({
+    name:"",
+    email:"",
+    expiry:""
+  });
+
+  save();
+}
+
+function deleteUser(index){
+
+  records.splice(index,1);
+
+  save();
+}
+
+</script>
+
+</body>
+</html>
