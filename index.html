@@ -547,12 +547,19 @@ function logoutUser(){
 
 async function saveRecordToFirebase(record){
   if(!recordsRef){showToast('Firebase is not configured.',true);return;}
-  await recordsRef.child(String(record.id)).set(record);
-}
 
-async function deleteRecordFromFirebase(id){
-  if(!recordsRef){showToast('Firebase is not configured.',true);return;}
-  await recordsRef.child(String(id)).remove();
+  const snap = await recordsRef.once('value');
+  const data = snap.val() || {};
+
+  let saveKey = String(record.id);
+
+  Object.keys(data).forEach(key => {
+    if(data[key] && String(data[key].id) === String(record.id)){
+      saveKey = key;
+    }
+  });
+
+  await recordsRef.child(saveKey).set(record);
 }
 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
@@ -885,6 +892,25 @@ function openDelete(idx){
   document.getElementById('delEmail').textContent=r.email;
   document.getElementById('deleteBackdrop').classList.add('open');
 }
+async function deleteRecordFromFirebase(id){
+  if(!recordsRef){
+    showToast('Firebase is not configured.',true);
+    return;
+  }
+
+  const snap = await recordsRef.once('value');
+  const data = snap.val() || {};
+
+  let deleteKey = String(id);
+
+  Object.keys(data).forEach(key => {
+    if(data[key] && String(data[key].id) === String(id)){
+      deleteKey = key;
+    }
+  });
+
+  await recordsRef.child(deleteKey).remove();
+}  
 async function confirmDelete(){
   const r=records[deleteIdx];
   const name=r.name;
