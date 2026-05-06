@@ -546,18 +546,25 @@ function logoutUser(){
 }
 
 async function saveRecordToFirebase(record){
-  if(!recordsRef){showToast('Firebase is not configured.',true);return;}
+  if(!recordsRef){
+    showToast('Firebase is not configured.',true);
+    return;
+  }
 
   const snap = await recordsRef.once('value');
   const data = snap.val() || {};
 
-  let saveKey = String(record.id);
+  let saveKey = null;
 
   Object.keys(data).forEach(key => {
     if(data[key] && String(data[key].id) === String(record.id)){
       saveKey = key;
     }
   });
+
+  if(saveKey === null){
+    saveKey = String(record.id || Date.now());
+  }
 
   await recordsRef.child(saveKey).set(record);
 }
