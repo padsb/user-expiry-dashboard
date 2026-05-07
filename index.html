@@ -573,22 +573,30 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.backdrop').forEach(b=>b.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');}));
 
 function updateMetrics(){
-  const counts={total:0,active:0,critical:0,warning:0,expired:0,nodate:0};
+  const counts={total:0,active:0,critical:0,warning:0,expired:0,nodate:0,withdrawn:0};
   records.forEach(r=>{
-    counts.total++;
-    if(r.status==='active')counts.active++;
-    else if(r.status==='critical')counts.critical++;
-    else if(r.status==='warning')counts.warning++;
-    else if(r.status==='expired')counts.expired++;
-    else if(r.status==='no-date')counts.nodate++;
-  });
+
+  if(r.withdrawn){
+    counts.withdrawn++;
+    return;
+  }
+
+  counts.total++;
+
+  if(r.status==='active')counts.active++;
+  else if(r.status==='critical')counts.critical++;
+  else if(r.status==='warning')counts.warning++;
+  else if(r.status==='expired')counts.expired++;
+  else if(r.status==='no-date')counts.nodate++;
+});
   const html=`
     <div class="metric total" onclick="setStatusFilter('')"><div class="metric-label">Total accounts</div><div class="metric-value">${counts.total}</div></div>
     <div class="metric active" onclick="setStatusFilter('active')"><div class="metric-label">Active</div><div class="metric-value">${counts.active}</div></div>
     <div class="metric warning" onclick="setStatusFilter('warning')"><div class="metric-label">Near expiry</div><div class="metric-value">${counts.warning}</div><div class="metric-hint">30–90 days</div></div>
     <div class="metric critical" onclick="setStatusFilter('critical')"><div class="metric-label">Critical</div><div class="metric-value">${counts.critical}</div><div class="metric-hint">&lt;30 days</div></div>
     <div class="metric expired" onclick="setStatusFilter('expired')"><div class="metric-label">Expired</div><div class="metric-value">${counts.expired}</div></div>
-    <div class="metric nodate" onclick="setStatusFilter('no-date')"><div class="metric-label">No date set</div><div class="metric-value">${counts.nodate}</div></div>
+   <div class="metric nodate" onclick="setStatusFilter('no-date')"><div class="metric-label">No date set</div><div class="metric-value">${counts.nodate}</div></div>
+   <div class="metric nodate" onclick="showWithdrawn()"><div class="metric-label">Withdrawn</div><div class="metric-value">${counts.withdrawn}</div></div>
   `;
   document.getElementById('metrics').innerHTML=html;
 }
@@ -784,8 +792,20 @@ function changePage(delta){page=Math.max(1,page+delta);renderTable();}
 function setSort(val){document.getElementById('sortBy').value=val;renderTable();}
 function setStatusFilter(status){document.getElementById('filterStatus').value=status;page=1;renderTable();}
 function clearTableFilter(){document.getElementById('filterStatus').value='';page=1;activeFilter=null;renderTable();}
-function getFiltered(){const search=(document.getElementById('searchBox').value||'').toLowerCase();return records.filter(r=>(r.name.toLowerCase().includes(search)||r.email.toLowerCase().includes(search)));}
+  function showWithdrawn(){
 
+  activeFilter='withdrawn';
+  page=1;
+
+  let filtered=records.filter(r=>r.withdrawn);
+
+  renderTable(filtered);
+
+  document.getElementById('tableTitle').textContent='Withdrawn accounts';
+
+  document.getElementById('clearFilterBtn').style.display='';
+}
+function getFiltered(){const search=(document.getElementById('searchBox').value||'').toLowerCase();return records.filter(r=>!r.withdrawn && (r.name.toLowerCase().includes(search)||r.email.toLowerCase().includes(search)));
 /* ===== EDIT USER ===== */
 function openEditModal(idx){
   editIdx=idx;
@@ -921,8 +941,23 @@ async function deleteRecordFromFirebase(id){
 async function confirmDelete(){
   const r=records[deleteIdx];
   const name=r.name;
-  try{await deleteRecordFromFirebase(r.id);closeModal('deleteBackdrop');closeModal('editBackdrop');if(activeFilter){clearTableFilter();}showToast('Removed: '+name);}
-  catch(err){showToast('Delete failed: '+err.message,true);}
+
+  try{
+    r.withdrawn = true;
+    await recordsRef.set(records);
+    closeModal('deleteBackdrop');
+    closeModal('editBackdrop');
+
+    if(activeFilter){
+      clearTableFilter();
+    }
+
+    refreshAll();
+    showToast('Withdrawn: '+name);
+  }
+  catch(err){
+    showToast('Withdraw failed: '+err.message,true);
+  }
 }
 
 function exportCSV(){
