@@ -610,7 +610,12 @@ function updateCharts(){
   const currentYearMonth=today.getFullYear()+'-'+(today.getMonth()+1).toString().padStart(2,'0');
   
   records.forEach(r=>{
-    statuses[r.status]++;
+
+  if(r.withdrawn){
+    return;
+  }
+
+  statuses[r.status]++;
     if(r.resourceOwner){
       resourceOwners[r.resourceOwner]=(resourceOwners[r.resourceOwner]||0)+1;
     }
