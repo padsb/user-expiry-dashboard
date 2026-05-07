@@ -741,6 +741,13 @@ function renderTable(){
   const sortBy=document.getElementById('sortBy').value;
   
   let filtered=records.filter(r=>{
+    if(activeFilter==='withdrawn'){
+  return r.withdrawn === true;
+}
+
+if(r.withdrawn === true){
+  return false;
+}
     const match=(r.name.toLowerCase().includes(search)||r.email.toLowerCase().includes(search));
     const statusOk=!statusFilter||r.status===statusFilter;
     return match&&statusOk;
