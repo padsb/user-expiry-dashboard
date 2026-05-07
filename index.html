@@ -246,7 +246,7 @@ body.locked .container, body.locked .btn-add-user{filter:grayscale(.4);pointer-e
             <th style="width:11%">Contract Type</th>
             <th style="width:11%">Resource Owner</th>
             <th style="width:10%">Department</th>
-            <th onclick="setSort('expiry-asc')" style="width:11%">Expiry &#8597;</th>
+            <th onclick="setSort('expiry-asc')" style="width:11%" id="expiryHeader">Expiry &#8597;</th>
             <th style="width:9%">Days left</th>
             <th style="width:8%">Status</th>
             <th style="width:8%">Actions</th>
@@ -787,7 +787,7 @@ if(r.withdrawn === true){
       <td>${r.contractType||'—'}</td>
       <td>${r.resourceOwner||'—'}</td>
       <td>${r.department||'—'}</td>
-      <td>${r.expiry||'—'}</td>
+      <td>${activeFilter==='withdrawn' ? (r.withdrawnDate||'—') : (r.expiry||'—')}</td>
       <td class="days">${r.withdrawn ? '0' : daysText(r)}</td>
       <td><span class="badge ${r.withdrawn ? 'no-date' : r.status}">${r.withdrawn ? 'Withdrawn' : badgeText(r)}</span></td>
       <td><button class="btn-edit" onclick="openEditModal(${idx})">Edit</button></td>
@@ -815,6 +815,7 @@ function clearTableFilter(){document.getElementById('filterStatus').value='';pag
   renderTable();
   document.getElementById('tableTitle').textContent='Withdrawn accounts';
   document.getElementById('clearFilterBtn').style.display='';
+  document.getElementById('expiryHeader').textContent='Withdrawal date';
 }
 function getFiltered(){
     const search=(document.getElementById('searchBox').value||'').toLowerCase();
@@ -975,8 +976,9 @@ async function confirmDelete(){
 
   try{
     r.withdrawn = true;
-    r.daysLeft = 0;
-    r.status = 'withdrawn';
+r.withdrawnDate = new Date().toISOString().slice(0,10);
+r.daysLeft = 0;
+r.status = 'withdrawn';
     await recordsRef.set(records);
     closeModal('deleteBackdrop');
     closeModal('editBackdrop');
