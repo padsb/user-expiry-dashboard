@@ -805,7 +805,27 @@ function clearTableFilter(){document.getElementById('filterStatus').value='';pag
 
   document.getElementById('clearFilterBtn').style.display='';
 }
-function getFiltered(){const search=(document.getElementById('searchBox').value||'').toLowerCase();return records.filter(r=>!r.withdrawn && (r.name.toLowerCase().includes(search)||r.email.toLowerCase().includes(search)));
+function getFiltered(){
+    const search=(document.getElementById('searchBox').value||'').toLowerCase();
+
+    return records.filter(r=>{
+
+        if(activeFilter==='withdrawn'){
+            return r.withdrawn &&
+            (
+                r.name.toLowerCase().includes(search) ||
+                r.email.toLowerCase().includes(search)
+            );
+        }
+
+        if(r.withdrawn) return false;
+
+        return (
+            r.name.toLowerCase().includes(search) ||
+            r.email.toLowerCase().includes(search)
+        );
+    });
+}
 /* ===== EDIT USER ===== */
 function openEditModal(idx){
   editIdx=idx;
