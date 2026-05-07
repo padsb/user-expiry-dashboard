@@ -596,7 +596,7 @@ function updateMetrics(){
     <div class="metric critical" onclick="setStatusFilter('critical')"><div class="metric-label">Critical</div><div class="metric-value">${counts.critical}</div><div class="metric-hint">&lt;30 days</div></div>
     <div class="metric expired" onclick="setStatusFilter('expired')"><div class="metric-label">Expired</div><div class="metric-value">${counts.expired}</div></div>
    <div class="metric nodate" onclick="setStatusFilter('no-date')"><div class="metric-label">No date set</div><div class="metric-value">${counts.nodate}</div></div>
-   <div class="metric nodate" onclick="showWithdrawn()"><div class="metric-label">Withdrawn</div><div class="metric-value">${counts.withdrawn}</div></div>
+   <div class="metric nodate" onclick="showWithdraw()"><div class="metric-label">Withdrawn</div><div class="metric-value">${counts.withdrawn}</div></div>
   `;
   document.getElementById('metrics').innerHTML=html;
 }
