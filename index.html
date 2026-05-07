@@ -748,6 +748,9 @@ function renderTable(){
 if(r.withdrawn === true){
   return false;
 }
+    if(activeFilter && activeFilter.startsWith('owner:')){
+  return !r.withdrawn && r.resourceOwner === activeFilter.replace('owner:','');
+}
     const match=(r.name.toLowerCase().includes(search)||r.email.toLowerCase().includes(search));
     const statusOk=!statusFilter||r.status===statusFilter;
     return match&&statusOk;
@@ -1157,17 +1160,14 @@ function applyStatusFilter(){
 
 function applyResourceOwnerFilter(){
   if(!window.drillResourceOwner)return;
+
   document.getElementById('filterStatus').value='';
   document.getElementById('searchBox').value='';
   page=1;
-  activeFilter=window.drillResourceOwner;
-  const filtered=records.filter(r=>r.resourceOwner===window.drillResourceOwner);
-  let html='';
-  filtered.slice((page-1)*PER_PAGE,page*PER_PAGE).forEach(r=>{
-    const idx=records.indexOf(r);
-    html+=`<tr><td>${r.name}</td><td class="email">${r.email}</td><td>${r.contractType||'—'}</td><td>${r.resourceOwner||'—'}</td><td>${r.department||'—'}</td><td>${r.expiry||'—'}</td><td class="days">${daysText(r)}</td><td><span class="badge ${r.status}">${badgeText(r)}</span></td><td><button class="btn-edit" onclick="openEditModal(${idx})">Edit</button></td></tr>`;
-  });
-  document.getElementById('tableBody').innerHTML=html;
+  activeFilter='owner:' + window.drillResourceOwner;
+
+  renderTable();
+
   document.getElementById('tableTitle').textContent='Accounts by '+window.drillResourceOwner;
   document.getElementById('clearFilterBtn').style.display='';
   closeModal('drillBackdrop');
