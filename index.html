@@ -964,6 +964,8 @@ async function confirmDelete(){
 
   try{
     r.withdrawn = true;
+    r.daysLeft = 0;
+    r.status = 'withdrawn';
     await recordsRef.set(records);
     closeModal('deleteBackdrop');
     closeModal('editBackdrop');
