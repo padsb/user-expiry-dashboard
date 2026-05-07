@@ -780,8 +780,8 @@ if(r.withdrawn === true){
       <td>${r.resourceOwner||'—'}</td>
       <td>${r.department||'—'}</td>
       <td>${r.expiry||'—'}</td>
-      <td class="days">${daysText(r)}</td>
-      <td><span class="badge ${r.status}">${badgeText(r)}</span></td>
+      <td class="days">${r.withdrawn ? '0' : daysText(r)}</td>
+      <td><span class="badge ${r.withdrawn ? 'no-date' : r.status}">${r.withdrawn ? 'Withdrawn' : badgeText(r)}</span></td>
       <td><button class="btn-edit" onclick="openEditModal(${idx})">Edit</button></td>
     </tr>`;
   });
