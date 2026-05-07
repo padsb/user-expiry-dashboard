@@ -792,17 +792,13 @@ function changePage(delta){page=Math.max(1,page+delta);renderTable();}
 function setSort(val){document.getElementById('sortBy').value=val;renderTable();}
 function setStatusFilter(status){document.getElementById('filterStatus').value=status;page=1;renderTable();}
 function clearTableFilter(){document.getElementById('filterStatus').value='';page=1;activeFilter=null;renderTable();}
-  function showWithdrawn(){
-
+ function showWithdraw(){
   activeFilter='withdrawn';
   page=1;
-
-  let filtered=records.filter(r=>r.withdrawn);
-
-  renderTable(filtered);
-
+  document.getElementById('filterStatus').value='';
+  document.getElementById('searchBox').value='';
+  renderTable();
   document.getElementById('tableTitle').textContent='Withdrawn accounts';
-
   document.getElementById('clearFilterBtn').style.display='';
 }
 function getFiltered(){
