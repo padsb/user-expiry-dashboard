@@ -591,8 +591,7 @@ function updateMetrics(){
 });
   const html=`
     <div class="metric total" onclick="setStatusFilter('')"><div class="metric-label">Total accounts</div><div class="metric-value">${counts.total}</div></div>
-    <div class="metric active" onclick="setStatusFilter('active')"><div class="metric-label">Active</div><div class="metric-value">${counts.active}</div></div>
-    <div class="metric warning" onclick="setStatusFilter('warning')"><div class="metric-label">Near expiry</div><div class="metric-value">${counts.warning}</div><div class="metric-hint">30–90 days</div></div>
+     <div class="metric warning" onclick="setStatusFilter('warning')"><div class="metric-label">Near expiry</div><div class="metric-value">${counts.warning}</div><div class="metric-hint">30–90 days</div></div>
     <div class="metric critical" onclick="setStatusFilter('critical')"><div class="metric-label">Critical</div><div class="metric-value">${counts.critical}</div><div class="metric-hint">&lt;30 days</div></div>
     <div class="metric expired" onclick="setStatusFilter('expired')"><div class="metric-label">Expired</div><div class="metric-value">${counts.expired}</div></div>
    <div class="metric nodate" onclick="setStatusFilter('no-date')"><div class="metric-label">No date set</div><div class="metric-value">${counts.nodate}</div></div>
